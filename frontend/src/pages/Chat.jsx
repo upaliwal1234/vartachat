@@ -20,10 +20,17 @@ export default function Chat() {
   const [inputValue, setInputValue] = useState('');
   const [guestId, setGuestId] = useState(null);
   const [guestName, setGuestName] = useState('');
+  const isAuthRef = useRef(isAuthenticated);
+  const tokenRef = useRef(token);
   const typingTimerRef = useRef(null);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    isAuthRef.current = isAuthenticated;
+    tokenRef.current = token;
+  }, [isAuthenticated, token]);
 
   // Scroll to bottom on new messages
   useEffect(() => {
@@ -80,10 +87,10 @@ export default function Chat() {
 
       // Wait for connect then authenticate
       if (s.connected) {
-        authenticate(isAuthenticated ? token : null, gid, gname);
+        authenticate(isAuthRef.current ? tokenRef.current : null, gid, gname);
       } else {
         s.on('connect', () => {
-          authenticate(isAuthenticated ? token : null, gid, gname);
+          authenticate(isAuthRef.current ? tokenRef.current : null, gid, gname);
         });
       }
     };
@@ -93,7 +100,7 @@ export default function Chat() {
     return () => {
       if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []); // Intentionally empty: socket initialization runs once on mount
 
   const handleSend = useCallback(() => {
     const content = inputValue.trim();

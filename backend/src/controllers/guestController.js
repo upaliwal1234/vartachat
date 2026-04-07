@@ -1,13 +1,18 @@
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4, validate: uuidValidate } = require('uuid');
 const Session = require('../models/Session');
 const Message = require('../models/Message');
 
 const createOrGetSession = async (req, res) => {
   const { guestId } = req.body;
 
+  // Validate guestId is a valid UUID if provided
+  if (guestId !== undefined && (typeof guestId !== 'string' || !uuidValidate(guestId))) {
+    return res.status(400).json({ message: 'Invalid guest ID format' });
+  }
+
   try {
     if (guestId) {
-      const session = await Session.findOne({ guestId });
+      const session = await Session.findOne({ guestId: String(guestId) });
       if (session) {
         session.lastActive = new Date();
         await session.save();
@@ -31,14 +36,19 @@ const getGuestChatHistory = async (req, res) => {
   const { guestId } = req.params;
   const { roomId } = req.query;
 
+  // Validate guestId is a valid UUID
+  if (typeof guestId !== 'string' || !uuidValidate(guestId)) {
+    return res.status(400).json({ message: 'Invalid guest ID format' });
+  }
+
   try {
-    const session = await Session.findOne({ guestId });
+    const session = await Session.findOne({ guestId: String(guestId) });
     if (!session) {
       return res.status(404).json({ message: 'Guest session not found' });
     }
 
-    const query = { senderId: guestId, isGuest: true };
-    if (roomId) query.roomId = roomId;
+    const query = { senderId: String(guestId), isGuest: true };
+    if (roomId && typeof roomId === 'string') query.roomId = roomId;
 
     const messages = await Message.find(query).sort({ createdAt: 1 }).limit(100);
 

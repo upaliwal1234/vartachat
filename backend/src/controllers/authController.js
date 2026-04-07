@@ -15,7 +15,7 @@ const register = async (req, res) => {
   const { name, email, password } = req.body;
 
   try {
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email: String(email) });
     if (existingUser) {
       return res.status(400).json({ message: 'Email already in use' });
     }
@@ -38,7 +38,7 @@ const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: String(email) });
     if (!user || !(await user.matchPassword(password))) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }

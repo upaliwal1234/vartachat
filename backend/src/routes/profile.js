@@ -3,6 +3,7 @@ const multer = require('multer');
 const path = require('path');
 const { protect } = require('../middleware/auth');
 const { getProfile, updateProfile, changePassword } = require('../controllers/profileController');
+const { apiLimiter } = require('../middleware/rateLimiter');
 
 const router = express.Router();
 
@@ -32,8 +33,8 @@ const upload = multer({
   fileFilter,
 });
 
-router.get('/', protect, getProfile);
-router.put('/', protect, upload.single('profilePicture'), updateProfile);
-router.put('/password', protect, changePassword);
+router.get('/', apiLimiter, protect, getProfile);
+router.put('/', apiLimiter, protect, upload.single('profilePicture'), updateProfile);
+router.put('/password', apiLimiter, protect, changePassword);
 
 module.exports = router;
