@@ -1,4 +1,4 @@
-# VartaChat 💬
+# VartaChat 💬 
 
 A full-stack, real-time anonymous chat application inspired by Omegle — connect with random strangers worldwide, instantly.
 
