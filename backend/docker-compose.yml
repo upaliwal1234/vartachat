@@ -1,0 +1,11 @@
+services:
+  # Define a service named 'varta-chat'
+  varta-chat:
+    # build: . # Instruct Docker Compose to build the image from the current directory (where the Dockerfile is located)
+    image: ghcr.io/upaliwal1234/vartachat:latest
+    container_name: varta-chat # Assign a specific name to the container
+    ports:
+      - "16016:5000"
+    restart: unless-stopped # Configure the container to restart unless it is explicitly stopped
+    env_file: # Specify an environment file to load environment variables from
+      - .env # Path to your environment file
