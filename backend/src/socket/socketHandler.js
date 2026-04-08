@@ -136,7 +136,7 @@ const socketHandler = (io) => {
         console.error('Error saving message:', err);
       }
 
-      io.to(userInfo.roomId).emit('new_message', message);
+      socket.to(userInfo.roomId).emit('new_message', message);
     });
 
     // Typing indicator
